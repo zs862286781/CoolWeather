@@ -1,10 +1,15 @@
 package com.example.coolweather.util;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.text.TextUtils;
 
+import com.example.coolweather.MyApplication;
 import com.example.coolweather.db.City;
 import com.example.coolweather.db.County;
 import com.example.coolweather.db.Province;
+import com.example.coolweather.gson.Weather;
+import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -67,5 +72,25 @@ public class Utulity {
             }
         }
         return false;
+    }
+
+    public static Weather handleWeatherResponse(String response) {
+        try {
+            JSONObject jsonObject = new JSONObject(response);
+            JSONArray jsonArray = jsonObject.getJSONArray("HeWeather");
+            String content = jsonArray.getJSONObject(0).toString();
+            return new Gson().fromJson(content,Weather.class);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static SharedPreferences getPreferences(){
+        return MyApplication.getmContext().getSharedPreferences("data", Context.MODE_PRIVATE);
+    }
+
+    public static SharedPreferences.Editor getPreferencesEditor(){
+        return MyApplication.getmContext().getSharedPreferences("data", Context.MODE_PRIVATE).edit();
     }
 }

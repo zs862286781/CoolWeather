@@ -1,6 +1,9 @@
 package com.example.coolweather.util;
 
+import android.app.Application;
 import android.util.Log;
+
+import com.example.coolweather.MyApplication;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
