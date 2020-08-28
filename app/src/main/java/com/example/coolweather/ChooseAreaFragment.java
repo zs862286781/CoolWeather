@@ -85,8 +85,15 @@ public class ChooseAreaFragment extends Fragment {
                     queryCounties();
                 }else if (currentLeave == LEVEL_COUNTY) {
                     County county = countyList.get(i);
-                    WeatherActivity.starActivity(getContext(),county.getWeatherId());
-                    getActivity().finish();
+                    if (getActivity() instanceof MainActivity) {
+                        WeatherActivity.starActivity(getContext(),county.getWeatherId());
+                        getActivity().finish();
+                    }else if (getActivity() instanceof WeatherActivity) {
+                        WeatherActivity activity = (WeatherActivity) getActivity();
+                        activity.drawerLayout.closeDrawers();
+                        activity.swipeRefreshLayout.setRefreshing(true);
+                        activity.requestWeather(county.getWeatherId());
+                    }
                 }
             }
         });
@@ -103,8 +110,8 @@ public class ChooseAreaFragment extends Fragment {
     }
 
     /*
-    * 查询全国省份，优先从本地数据库中查找
-    * */
+     * 查询全国省份，优先从本地数据库中查找
+     * */
     private void queryProvinces() {
         areaTitle.setText("全国");
         backButton.setVisibility(View.GONE);

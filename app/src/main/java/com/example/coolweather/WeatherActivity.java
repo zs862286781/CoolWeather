@@ -1,7 +1,9 @@
 package com.example.coolweather;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.content.Context;
 import android.content.Intent;
@@ -21,8 +23,11 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.coolweather.gson.Forecast;
 import com.example.coolweather.gson.Weather;
+import com.example.coolweather.service.AutoUpdateService;
 import com.example.coolweather.util.HttpUtil;
 import com.example.coolweather.util.Utulity;
+
+import java.time.Instant;
 
 import okhttp3.internal.Util;
 
@@ -42,6 +47,12 @@ public class WeatherActivity extends AppCompatActivity {
 
     private ImageView bingPicImg;
 
+    public SwipeRefreshLayout swipeRefreshLayout;
+    String weatherId;
+
+    public DrawerLayout drawerLayout;
+
+    private Button navButton;
     public static void starActivity(Context context,String weatherId) {
         Intent intent = new Intent(context,WeatherActivity.class);
         intent.putExtra("weatherId",weatherId);
@@ -66,14 +77,27 @@ public class WeatherActivity extends AppCompatActivity {
         sportText = findViewById(R.id.sport_text);
         bingPicImg = findViewById(R.id.bing_pic_img);
 
+        swipeRefreshLayout = findViewById(R.id.weather_swipe);
+        swipeRefreshLayout.setColorSchemeResources(R.color.colorAccent);
+        drawerLayout = findViewById(R.id.draw_weather);
+        navButton = findViewById(R.id.nav_button);
         String weatherString = Utulity.getPreferences().getString("weather",null);
+
         if (weatherString != null) {
             Weather weather = Utulity.handleWeatherResponse(weatherString);
+            weatherId = weather.basic.weatherId;
             showWeatherInfo(weather);
         } else {
-            String weatherId = getIntent().getStringExtra("weatherId");
+            weatherId = getIntent().getStringExtra("weatherId");
             requestWeather(weatherId);
         }
+
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                requestWeather(weatherId);
+            }
+        });
 
         String bingPic = Utulity.getPreferences().getString("bing_pic",null);
         if (bingPic != null) {
@@ -81,6 +105,13 @@ public class WeatherActivity extends AppCompatActivity {
         }else {
             loadBingPic();
         }
+
+        navButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                drawerLayout.openDrawer(GravityCompat.START);
+            }
+        });
     }
 
     private void hideStatusBar() {
@@ -112,6 +143,7 @@ public class WeatherActivity extends AppCompatActivity {
                         }else {
                             Toast.makeText(WeatherActivity.this,"获取天气失败 ",Toast.LENGTH_LONG).show();
                         }
+                        swipeRefreshLayout.setRefreshing(false);
                     }
                 });
             }
@@ -182,6 +214,8 @@ public class WeatherActivity extends AppCompatActivity {
         carWashText.setText(carWash);
         sportText.setText(sport);
         weatherLayout.setVisibility(View.VISIBLE);
+        Intent intent = new Intent(this, AutoUpdateService.class);
+        startService(intent);
     }
 
 }

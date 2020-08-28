@@ -7,9 +7,17 @@ android {
         applicationId "com.example.coolweather"
         minSdkVersion 23
         targetSdkVersion 29
-        versionCode 1
+        versionCode 2
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+    signingConfigs {
+        config {
+            storeFile file('/Users/songzhang/Desktop/androidKeyStore/zhangsong.jks')
+            storePassword '566566'
+            keyAlias 'zhangsongdev'
+            keyPassword '566566'
+        }
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -19,6 +27,7 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.config
         }
     }
 }
@@ -31,6 +40,12 @@ dependencies {
     implementation 'org.litepal.guolindev:core:3.1.1'// 数据库
     implementation 'com.google.code.gson:gson:2.8.5'//json解析
     implementation 'com.github.bumptech.glide:glide:3.7.0' //图片加载库
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'//下啦刷新
+    implementation 'com.google.android.material:material:1.3.0-alpha02' //布局设计库
+    implementation 'de.hdodenhof:circleimageview:2.1.0' //圆角图片实现
+    implementation 'androidx.recyclerview:recyclerview:1.1.0' //列表
+    implementation 'androidx.cardview:cardview:1.0.0' //卡片试图，实现阴影，圆角
+
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
